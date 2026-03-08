@@ -1,0 +1,26 @@
+{
+  "imdb": {
+    "transformer_mean": 0.7366666666666667,
+    "transformer_std": 0.003009245014211293,
+    "lstm_mean": 0.7106666666666666,
+    "lstm_std": 0.010880665829299644,
+    "bow_mean": 0.6903333333333334,
+    "bow_std": 0.002494438257849247,
+    "transformer_vs_lstm_improvement_pp": 2.6000000000000023,
+    "transformer_vs_lstm_cohens_d": 3.257075993571364,
+    "transformer_vs_lstm_p": 0.04583140355715429,
+    "transformer_vs_bow_improvement_pp": 4.633333333333337
+  },
+  "cifar10": {
+    "vit_mean": 0.389,
+    "vit_std": 0.004966554808583784,
+    "cnn_mean": 0.5423333333333334,
+    "cnn_std": 0.0068475461947247185,
+    "vit_vs_cnn_diff_pp": -15.333333333333336,
+    "note": "ViTs need large data; pretrained ViT (62.6%) > pretrained ResNet (40.6%)"
+  },
+  "attention_entropy_ks_test": {
+    "statistic": 1.0,
+    "p_value": 7.399507995628047e-300
+  }
+}

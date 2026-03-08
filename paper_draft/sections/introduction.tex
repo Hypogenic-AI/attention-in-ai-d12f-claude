@@ -1,0 +1,20 @@
+\section{Introduction}
+\label{sec:intro}
+
+Every information-processing system faces the same fundamental challenge: given limited capacity, which inputs deserve the most processing? Humans solve this through selective attention~\citep{simon1971designing}. Transformer neural networks solve it through learned query-key-value weighting~\citep{vaswani2017attention}. Search engines solve it through link-based authority scores~\citep{page1999pagerank}. Recommendation systems solve it through collaborative similarity~\citep{koren2009matrix}. Despite originating in different fields, these mechanisms share a striking structural similarity that has received little formal analysis.
+
+\para{The attention mechanism beyond NLP.}
+Since \citet{vaswani2017attention} showed that attention alone suffices for state-of-the-art sequence transduction, the mechanism has spread to virtually every AI domain: computer vision~\citep{dosovitskiy2021image}, speech recognition~\citep{radford2022whisper}, image generation~\citep{peebles2023scalable}, music synthesis~\citep{huang2018music}, graph learning~\citep{velickovic2018graph}, protein structure prediction, and content ranking~\citep{linkedin2025ranking}. Surveys document this cross-domain adoption~\citep{brauwers2022survey,guo2022attention}, yet they treat each application independently. No existing work has (1)~quantitatively compared attention patterns across modalities using identical architectures, (2)~formally mapped the mathematical relationship between computational attention and internet attention-allocation mechanisms, or (3)~measured whether attention universally improves over non-attention baselines with consistent effect sizes across domains.
+
+\para{Our contribution.}
+We conduct a unified empirical and theoretical study that bridges these gaps. We train small transformers and non-attention baselines from scratch on text and vision tasks, evaluate pretrained attention-based models at scale, analyze attention weight statistics across domains, and formally demonstrate the isomorphism between transformer attention, PageRank, and collaborative filtering. Our main finding is that all three mechanisms are instances of a single abstract operation---\emph{normalized relevance-weighted aggregation}---and that this operation consistently improves performance across modalities.
+
+Specifically, we make the following contributions:
+\begin{itemize}[leftmargin=*,itemsep=0pt,topsep=0pt]
+    \item We conduct cross-domain experiments showing that attention-based transformers outperform non-attention baselines on text classification by 2.6 percentage points ($p{=}0.046$) from scratch, and by over 22 percentage points at scale with pretraining.
+    \item We analyze attention weight distributions across text and vision, revealing domain-specific adaptations (text: diffuse, entropy ${\approx}4.6$; vision: focused, entropy ${\approx}2.5$) within an identical mathematical framework.
+    \item We formally demonstrate that transformer self-attention, PageRank, and collaborative filtering are mathematical instances of the same pattern: $\text{output} = \text{normalize}(\text{relevance}(\vq, \mK)) \cdot \mV$, connecting computational attention to internet infrastructure.
+\end{itemize}
+
+\para{Paper organization.}
+\Secref{sec:related} reviews attention mechanisms across domains and the attention economy. \Secref{sec:method} describes our experimental methodology and the formal mathematical mapping. \Secref{sec:results} presents cross-domain performance results, attention pattern analysis, and the mathematical isomorphism. \Secref{sec:discussion} interprets the findings and discusses limitations. \Secref{sec:conclusion} summarizes our contributions and outlines future work.

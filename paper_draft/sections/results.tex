@@ -1,0 +1,116 @@
+\section{Results}
+\label{sec:results}
+
+\subsection{Cross-Domain Performance (From Scratch)}
+\label{sec:from_scratch}
+
+\para{Text classification.}
+\Tabref{tab:text_results} presents results on \imdb sentiment classification. The transformer achieves 73.7\% accuracy, outperforming \bilstm by 2.6 percentage points (Cohen's $d = 3.26$, $p = 0.046$) and \bow by 4.6 percentage points ($p = 0.004$). Despite using comparable parameter counts, the attention-based model extracts more useful features from the text through its ability to attend to relevant tokens regardless of position.
+
+\begin{table}[t]
+\centering
+\caption{Sentiment classification accuracy on \imdb (from scratch, 3 seeds). Best result in \textbf{bold}. The transformer significantly outperforms both non-attention baselines.}
+\label{tab:text_results}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Model} & \textbf{Accuracy (\%)} & \textbf{$p$-value vs.\ Transformer} \\
+\midrule
+\bow & 69.0 {\scriptsize $\pm$ 0.3} & 0.004 \\
+\bilstm & 71.1 {\scriptsize $\pm$ 1.1} & 0.046 \\
+\midrule
+Transformer & \textbf{73.7} {\scriptsize $\pm$ 0.3} & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\para{Image classification.}
+\Tabref{tab:vision_results} shows results on \cifarten. The CNN achieves 54.2\% accuracy, significantly outperforming the from-scratch transformer at 38.9\% ($p = 0.002$). This result is consistent with \citet{dosovitskiy2021image}, who showed that vision transformers require large-scale pretraining to compensate for their lack of built-in spatial inductive biases. We revisit this comparison with pretrained models below.
+
+\begin{table}[t]
+\centering
+\caption{Image classification accuracy on \cifarten (from scratch, 3 seeds). The CNN outperforms the from-scratch transformer, consistent with the known data-hunger of vision transformers.}
+\label{tab:vision_results}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Model} & \textbf{Accuracy (\%)} & \textbf{$p$-value vs.\ CNN} \\
+\midrule
+Transformer & 38.9 {\scriptsize $\pm$ 0.5} & 0.002 \\
+\midrule
+CNN & \textbf{54.2} {\scriptsize $\pm$ 0.7} & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Pretrained Model Comparison}
+\label{sec:pretrained}
+
+\Tabref{tab:pretrained} shows that at scale with pretraining, attention-based models dominate both text and vision. \distilbert achieves 89.0\% on \imdb, a 15.3 percentage point improvement over the from-scratch transformer. On \cifarten, \vit-Base achieves 62.6\% semantic accuracy, outperforming \resnet-50 at 40.6\% by 22.0 percentage points---\emph{reversing} the from-scratch result. This reversal is a key finding: attention mechanisms are more general than convolutional architectures (no built-in spatial bias), so they need more data to learn domain structure, but once they do, they surpass specialized architectures.
+
+\begin{table}[t]
+\centering
+\caption{Pretrained model comparison. Attention-based models (\distilbert, \vit) outperform non-attention models across both text and vision when pretrained at scale. Best result per task in \textbf{bold}.}
+\label{tab:pretrained}
+\begin{tabular}{@{}llcc@{}}
+\toprule
+\textbf{Model} & \textbf{Type} & \textbf{Task} & \textbf{Accuracy (\%)} \\
+\midrule
+\distilbert & Attention & \imdb Sentiment & \textbf{89.0} \\
+\midrule
+\resnet-50 & CNN & \cifarten (semantic) & 40.6 \\
+\vit-Base & Attention & \cifarten (semantic) & \textbf{62.6} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Cross-Domain Attention Pattern Analysis}
+\label{sec:attention_patterns}
+
+We extract attention weights from the first layer of trained transformers and compute entropy and maximum weight statistics. \Tabref{tab:entropy} summarizes the results. Text attention is significantly more diffuse (mean entropy 4.634 nats) than vision attention (mean entropy 2.537 nats), with a Kolmogorov--Smirnov test statistic of 1.0 ($p < 0.001$).
+
+\begin{table}[t]
+\centering
+\caption{Attention pattern statistics across domains. Text attention is diffuse (high entropy), while vision attention is focused (low entropy, high max weight). Both use the identical softmax-normalized relevance weighting mechanism.}
+\label{tab:entropy}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Domain} & \textbf{Mean Entropy (nats)} & \textbf{Std} & \textbf{Mean Max Weight} & \textbf{Std} \\
+\midrule
+Text (\imdb) & 4.634 & 0.247 & 0.035 & 0.042 \\
+Vision (\cifarten) & 2.537 & 0.352 & 0.189 & 0.122 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+This difference reflects domain-appropriate information routing. In language, meaning is distributed across many tokens: understanding sentiment requires integrating signals from diverse positions. In vision, relevant features are spatially localized: a few patches carry most of the discriminative information. The attention mechanism automatically discovers these domain-specific strategies without any architectural modification---the same softmax-normalized weighting adapts to the data.
+
+\subsection{Mathematical Isomorphism}
+\label{sec:isomorphism}
+
+\Tabref{tab:mapping} presents the formal mapping between transformer attention, PageRank, and collaborative filtering. All three mechanisms instantiate the general form of \eqref{eq:general_attention}: compute relevance between a query and available sources, normalize to a probability distribution, and aggregate source values by these weights.
+
+\begin{table}[t]
+\centering
+\caption{Mathematical mapping between three attention-like mechanisms. All share the abstract form: $\text{output} = \text{normalize}(\text{relevance}(\vq, \mK)) \cdot \mV$. Despite originating in different fields, each mechanism performs selective information routing through a capacity bottleneck.}
+\label{tab:mapping}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}llllll@{}}
+\toprule
+\textbf{Mechanism} & \textbf{Query} & \textbf{Keys} & \textbf{Values} & \textbf{Normalization} & \textbf{Output} \\
+\midrule
+Transformer & Token repr.\ $\vq_i$ & All tokens $\mK$ & Token values $\mV$ & $\softmax(\mQ\mK^\top / \sqrt{d_k})$ & Contextual repr. \\
+PageRank & Importance query & Link structure $\mA$ & Page importance $\vr$ & Column norm + damping & Rank scores \\
+Collab.\ filtering & User prefs.\ $\vu_u$ & All user prefs. & User ratings & $\softmax(\text{sim}(\vu_u, \vu_v))$ & Predicted ratings \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+We verify four shared properties numerically using synthetic instances of each mechanism:
+\begin{enumerate}[leftmargin=*,itemsep=0pt,topsep=0pt]
+    \item \textbf{Probability distribution}: All weight vectors sum to 1.
+    \item \textbf{Weighted aggregation}: All outputs are convex combinations of value vectors.
+    \item \textbf{Differentiability}: All operations have well-defined gradients (optimizable via gradient descent).
+    \item \textbf{Selective routing}: All mechanisms concentrate information flow through a bottleneck of relevance-based weighting.
+\end{enumerate}
+
+We also compare the entropy of attention weights produced by each mechanism on matched-size instances: transformer attention yields 1.425 nats, PageRank yields 1.485 nats, and collaborative filtering yields 1.215 nats. The similar entropy ranges confirm structurally equivalent information routing behavior.

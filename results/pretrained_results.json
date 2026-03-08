@@ -1,0 +1,21 @@
+{
+  "text_pretrained": {
+    "model": "DistilBERT (attention-based)",
+    "task": "IMDB Sentiment",
+    "accuracy": 0.89,
+    "n_samples": 500,
+    "inference_time_s": 2.2167515754699707
+  },
+  "vision_pretrained": {
+    "ViT-Base (attention-based)": {
+      "accuracy": 0.626,
+      "n_samples": 500,
+      "inference_time_s": 3.856780767440796
+    },
+    "ResNet-50 (CNN-based)": {
+      "accuracy": 0.406,
+      "n_samples": 500,
+      "inference_time_s": 3.9114108085632324
+    }
+  }
+}

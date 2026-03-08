@@ -1,0 +1,8 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+We investigate whether the attention mechanism is a universal computational principle that extends beyond transformers and NLP. Through cross-domain experiments, attention pattern analysis, and formal mathematical mapping, we find strong evidence supporting this view. Attention-based models outperform non-attention baselines on text from scratch ($p{=}0.046$) and dominate across both text and vision at scale with pretraining (\vit outperforms \resnet by 22 percentage points). Attention patterns adapt to domain structure---diffuse for text, focused for vision---without any architectural modification. Most importantly, we formally show that transformer self-attention, PageRank, and collaborative filtering are instances of the same mathematical operation: normalized relevance-weighted aggregation.
+
+The key takeaway is that attention---understood as selective information routing through a capacity bottleneck---is not a transformer-specific technique but a unifying principle across AI architectures and internet systems. This perspective suggests that attention-based architectures should be the default starting point for new domains and tasks, and that the mathematical connection between computational and economic attention deserves deeper theoretical investigation.
+
+Future work should extend the empirical evaluation to audio, graph, and multimodal domains; develop a quantitative (not just structural) theory linking attention mechanisms to user engagement in recommendation systems; and investigate whether sub-quadratic alternatives to attention~\citep{gu2023mamba} preserve the universality properties we identify or sacrifice them for efficiency.

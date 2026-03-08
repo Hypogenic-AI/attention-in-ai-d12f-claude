@@ -1,0 +1,27 @@
+{
+  "success": true,
+  "stages": {
+    "resource_finder": {
+      "success": true,
+      "completion_marker": "/workspaces/attention-in-ai-d12f-claude/.resource_finder_complete",
+      "outputs": {
+        "literature_review": "/workspaces/attention-in-ai-d12f-claude/literature_review.md",
+        "resources_catalog": "/workspaces/attention-in-ai-d12f-claude/resources.md",
+        "papers_dir": "/workspaces/attention-in-ai-d12f-claude/papers",
+        "datasets_dir": "/workspaces/attention-in-ai-d12f-claude/datasets",
+        "code_dir": "/workspaces/attention-in-ai-d12f-claude/code"
+      },
+      "log_file": "/workspaces/attention-in-ai-d12f-claude/logs/resource_finder_claude.log",
+      "transcript_file": "/workspaces/attention-in-ai-d12f-claude/logs/resource_finder_claude_transcript.jsonl",
+      "elapsed_time": 1008.8103723526001
+    },
+    "experiment_runner": {
+      "success": true,
+      "return_code": 0,
+      "elapsed_time": 857.8454778194427,
+      "log_file": "/workspaces/attention-in-ai-d12f-claude/logs/execution_claude.log",
+      "transcript_file": "/workspaces/attention-in-ai-d12f-claude/logs/execution_claude_transcript.jsonl"
+    }
+  },
+  "work_dir": "/workspaces/attention-in-ai-d12f-claude"
+}

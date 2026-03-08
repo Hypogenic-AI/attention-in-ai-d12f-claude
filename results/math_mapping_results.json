@@ -1,0 +1,87 @@
+{
+  "transformer": {
+    "mechanism": "softmax(QK^T/\u221ad) @ V",
+    "query": "token representation",
+    "key": "all token representations",
+    "value": "all token representations",
+    "normalization": "softmax over relevance scores",
+    "output": "weighted combination of values",
+    "weight_entropy": 1.5456797897257142
+  },
+  "pagerank": {
+    "mechanism": "p = (1-d)/N + d * M @ p (iterative attention)",
+    "query": "page importance query",
+    "key": "link structure (which pages link here)",
+    "value": "source page importance scores",
+    "normalization": "column-normalized adjacency (link probability)",
+    "output": "page importance = attention-weighted sum of linking pages",
+    "weight_entropy": 0.8136986861285994,
+    "pagerank_scores": [
+      0.17267768574308942,
+      0.1558291179858111,
+      0.19164778960036502,
+      0.20273329963907705,
+      0.15169169258115037,
+      0.12542041445050667
+    ]
+  },
+  "collaborative_filtering": {
+    "mechanism": "predicted = softmax(similarity(target, others)) @ ratings",
+    "query": "target user preference vector",
+    "key": "all users' preference vectors",
+    "value": "all users' rating vectors",
+    "normalization": "softmax over cosine similarities",
+    "output": "predicted ratings = attention-weighted combination",
+    "weight_entropy": 1.540944777689725,
+    "attention_weights": [
+      0.0,
+      0.2900939118656725,
+      0.13833480335181317,
+      0.13955972675453393,
+      0.29367675467616716,
+      0.13833480335181317
+    ],
+    "predicted_ratings": [
+      2.628759420843526,
+      2.331499823356864,
+      2.3350826661673585,
+      1.664917333832641,
+      1.8044770605871747,
+      1.9415869405362673,
+      1.2511378471799222,
+      1.171124175894174
+    ]
+  },
+  "unified_framework": {
+    "general_form": "output = normalize(relevance(query, keys)) @ values",
+    "components": {
+      "transformer": {
+        "relevance": "dot_product(q, k) / \u221ad",
+        "normalize": "softmax",
+        "aggregate": "weighted sum of value vectors"
+      },
+      "pagerank": {
+        "relevance": "link(source, target) / out_degree(source)",
+        "normalize": "column normalization + damping",
+        "aggregate": "weighted sum of source importances"
+      },
+      "collaborative_filtering": {
+        "relevance": "cosine_similarity(user_a, user_b)",
+        "normalize": "softmax",
+        "aggregate": "weighted sum of other users' ratings"
+      },
+      "recommendation_algorithm": {
+        "relevance": "predicted_user_interest(user, item)",
+        "normalize": "ranking/softmax over candidates",
+        "aggregate": "top-K selection for user feed"
+      }
+    },
+    "key_properties": [
+      "All use normalized relevance scores as weights",
+      "All produce output as weighted combination of values",
+      "All weights sum to 1 (probability distribution)",
+      "All are differentiable (can be optimized with gradient descent)",
+      "All serve to route information selectively (attention bottleneck)"
+    ]
+  }
+}

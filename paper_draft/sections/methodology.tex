@@ -1,0 +1,89 @@
+\section{Methodology}
+\label{sec:method}
+
+We design three complementary experiments to test whether attention is a universal computational principle: (1)~cross-domain performance comparison of attention vs.\ non-attention models, (2)~attention pattern analysis across modalities, and (3)~formal mathematical mapping between attention, PageRank, and collaborative filtering.
+
+\subsection{Datasets}
+\label{sec:datasets}
+
+We use two standard benchmarks spanning text and vision:
+
+\begin{itemize}[leftmargin=*,itemsep=2pt,topsep=2pt]
+    \item \textbf{\imdb Reviews}~\citep{maas2011learning}: 5{,}000 training and 2{,}000 test examples for binary sentiment classification. We apply word-level tokenization with a vocabulary of 5{,}000 words, maximum sequence length of 128, and zero-padding.
+    \item \textbf{\cifarten}~\citep{krizhevsky2009learning}: 5{,}000 training and 1{,}000 test images for 10-class image classification. Images are normalized to $[0,1]$ at $32 {\times} 32 {\times} 3$ resolution. For the transformer model, images are split into $8 {\times} 8$ patches, yielding 16 patches per image.
+\end{itemize}
+
+We use official train/test splits from HuggingFace, subsampled for computational efficiency while maintaining statistical power. Vocabularies are built from training data only to prevent data leakage.
+
+\subsection{Models}
+\label{sec:models}
+
+\para{From-scratch models.}
+We compare four architectures, keeping parameter counts comparable:
+
+\begin{table}[h]
+\centering
+\caption{Model architectures for from-scratch experiments. All models are trained with identical optimization settings.}
+\label{tab:models}
+\begin{tabular}{@{}llrl@{}}
+\toprule
+\textbf{Model} & \textbf{Architecture} & \textbf{Params} & \textbf{Domain} \\
+\midrule
+Transformer & 2-layer, 4-head, $d{=}64$ & ${\sim}$50K & Text \& Vision \\
+\bilstm & 2-layer, bidirectional, $h{=}64$ & ${\sim}$50K & Text \\
+\bow & Embedding average + 2-layer MLP & ${\sim}$330K & Text \\
+CNN & 3 conv layers + FC & ${\sim}$75K & Vision \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\para{Pretrained models.}
+To evaluate attention at scale, we compare \distilbert (attention-based) on \imdb and \vit-Base vs.\ \resnet-50 (CNN-based) on \cifarten using pretrained weights from HuggingFace.
+
+\subsection{Training Details}
+\label{sec:training}
+
+All from-scratch models use the Adam optimizer with learning rate $5 {\times} 10^{-4}$, batch size 64, and cosine annealing scheduling. Text models train for 10 epochs; vision models train for 30 epochs. We run each experiment with three random seeds (42, 43, 44) and report mean $\pm$ standard deviation. All experiments use deterministic PyTorch settings for reproducibility. We select the best validation accuracy across epochs for each run.
+
+\subsection{Evaluation}
+\label{sec:evaluation}
+
+\para{Performance metrics.}
+We report classification accuracy as the primary metric. For statistical comparisons, we compute paired $t$-tests across seeds, report $p$-values, and compute Cohen's $d$ as an effect size measure.
+
+\para{Attention pattern analysis.}
+For trained transformers, we extract attention weights from the first layer and compute two statistics: (1)~\emph{attention entropy} $H = -\sum_i \alpha_i \log \alpha_i$, measuring how diffusely attention is distributed, and (2)~\emph{maximum attention weight} $\max_i \alpha_i$, measuring how focused attention is on a single position. We compare these distributions across text and vision using the Kolmogorov--Smirnov test.
+
+\subsection{Mathematical Mapping}
+\label{sec:math_mapping}
+
+We formalize the structural isomorphism between three mechanisms by expressing each in a common form:
+\begin{equation}
+\label{eq:general_attention}
+\text{output} = \text{normalize}\big(\text{relevance}(\vq, \mK)\big) \cdot \mV
+\end{equation}
+where $\vq$ is a query, $\mK$ contains keys (sources of relevance), $\mV$ contains values (information to aggregate), and the normalization produces a probability distribution over sources. We verify four shared properties numerically: (1)~weights sum to 1, (2)~output is a weighted combination of values, (3)~the operation is differentiable, and (4)~the mechanism selectively routes information through a capacity bottleneck.
+
+\para{Transformer self-attention.}
+Given queries $\mQ$, keys $\mK$, and values $\mV$, the attention output is:
+\begin{equation}
+\label{eq:transformer_attn}
+\text{Attention}(\mQ, \mK, \mV) = \softmax\!\left(\frac{\mQ \mK^\top}{\sqrt{d_k}}\right) \mV
+\end{equation}
+where the relevance function is scaled dot-product similarity and normalization is the softmax function.
+
+\para{PageRank.}
+For a web graph with adjacency matrix $\mA$, the PageRank vector $\vr$ satisfies:
+\begin{equation}
+\label{eq:pagerank}
+\vr = \alpha \, \hat{\mA} \, \vr + (1 - \alpha) \, \frac{\vone}{n}
+\end{equation}
+where $\hat{\mA}$ is the column-normalized adjacency matrix (relevance based on link structure), $\alpha$ is the damping factor, and the output is a weighted aggregation of source page importance values.
+
+\para{Collaborative filtering.}
+For a user $u$ with preference vector $\vu_u$, predicted ratings are:
+\begin{equation}
+\label{eq:collab}
+\hat{r}_{ui} = \sum_{v \in \gU} \softmax\!\big(\text{sim}(\vu_u, \vu_v)\big) \cdot r_{vi}
+\end{equation}
+where the relevance function is cosine similarity between user preference vectors, normalization is softmax, and values are other users' ratings.

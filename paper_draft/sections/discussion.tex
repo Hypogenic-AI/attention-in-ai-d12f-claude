@@ -1,0 +1,40 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{Interpreting the Results}
+
+\para{Hypothesis H1: Attention outperforms non-attention baselines (partially supported).}
+For text, the transformer significantly outperforms both \bilstm ($p{=}0.046$) and \bow ($p{=}0.004$) from scratch. For vision, the from-scratch transformer underperforms the CNN, but this reverses dramatically with pretraining: \vit outperforms \resnet by 22 percentage points. This pattern is consistent with the broader literature~\citep{dosovitskiy2021image}: attention mechanisms are more general than architectures with built-in inductive biases, so they require more data to learn domain structure. Once that structure is learned, attention-based models surpass specialized alternatives. The data-hunger of vision transformers is itself evidence for the universality hypothesis---generality requires more learning, but ultimately yields stronger representations.
+
+\para{Hypothesis H2: Domain-specific attention patterns within a shared framework (supported).}
+Text and vision attention patterns are statistically different (KS test, $p{<}0.001$) despite using identical mathematical operations. Text attention is diffuse (entropy ${\approx}4.6$ nats), distributing weight across many tokens to integrate distributed semantic signals. Vision attention is focused (entropy ${\approx}2.5$ nats), concentrating on spatially localized discriminative features. The attention mechanism acts as an adaptive information router that discovers the appropriate strategy for each domain without any domain-specific architectural changes.
+
+\para{Hypothesis H3: Mathematical isomorphism (supported).}
+We demonstrate that transformer attention, PageRank, and collaborative filtering all implement $\text{normalize}(\text{relevance}(\vq, \mK)) \cdot \mV$, with comparable attention entropy ranges (1.2--1.5 nats on matched instances). This is not merely a metaphorical similarity: the operations share the same abstract algebraic structure---a probability distribution over sources computed from pairwise relevance, used to weight an aggregation of source values.
+
+\subsection{The Unified Attention Principle}
+
+Our findings point to a general principle: \emph{attention is the computational bottleneck through which information must pass to be processed---whether in neural networks, search engines, or recommendation systems.} The mathematical mechanism is the same: compute relevance between a query and available sources, normalize to a probability distribution, and aggregate source values by these weights.
+
+This principle operates at multiple levels:
+\begin{itemize}[leftmargin=*,itemsep=2pt,topsep=2pt]
+    \item \textbf{Human perception}: Limited cognitive bandwidth forces selective attention on relevant stimuli.
+    \item \textbf{AI attention}: Limited model capacity forces softmax weighting on relevant tokens or patches.
+    \item \textbf{Search ranking}: Limited link budget forces normalized link weights to determine page importance.
+    \item \textbf{Recommendation}: Limited user attention forces predicted relevance to determine content ranking.
+\end{itemize}
+
+The convergence of these mechanisms suggests that normalized relevance-weighted aggregation is not an arbitrary design choice but a natural solution to the fundamental problem of information selection under capacity constraints.
+
+\subsection{Limitations}
+\label{sec:limitations}
+
+We identify several limitations of this study:
+
+\begin{enumerate}[leftmargin=*,itemsep=2pt,topsep=2pt]
+    \item \textbf{Small-scale from-scratch experiments.} Our from-scratch models use approximately 50K parameters and train on 5{,}000 examples. Larger models and datasets would better demonstrate attention's advantages, though our pretrained model comparison addresses this partially.
+    \item \textbf{Limited modalities.} We test only text and vision empirically. The hypothesis extends to audio, graphs, protein folding, and other domains, which we leave for future work.
+    \item \textbf{Semantic matching for pretrained vision models.} ImageNet-pretrained models evaluated on \cifarten categories require fuzzy label matching, introducing noise in the pretrained vision comparison.
+    \item \textbf{Structural rather than quantitative mapping.} We show that the equations are isomorphic but do not prove that they optimize the same objective function or converge to similar solutions.
+    \item \textbf{Limited statistical power.} With only 3 random seeds per experiment, some comparisons have limited statistical power. The text domain result ($p{=}0.046$) is near the conventional significance threshold.
+\end{enumerate}

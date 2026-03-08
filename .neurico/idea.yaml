@@ -1,0 +1,33 @@
+idea:
+  title: The idea Attention is all you need not only applicable to transformers and
+    LLMs, but also applicable to the entire generative AI and Internet field.
+  domain: artificial_intelligence
+  hypothesis: 'The attention mechanism is not only central to the effectiveness of
+    transformers and large language models in generative AI, but also underlies the
+    core mechanisms of the broader generative AI and Internet fields, including how
+    internet products compete for and utilize human attention.
+
+    '
+  background:
+    description: 'The attention mechanism is the core of generative AI. Human perception
+      has bottlenecks and cannot process all information; attention is the bottleneck
+      through which the human brain and AI neural network filters and focuses information.
+
+      The theory model of the internet is also built precisely on human attention
+      or connection. Internet products compete for users'' limited attention and convert
+      it into traffic. Whether it''s a search engine''s PageRank (which can be understood
+      as a kind of attention voting between web pages) or recommendation algorithms
+      that complete content distribution by predicting what users will pay attention
+      to, their core mechanisms align with the mathematical description of the attention
+      mechanism.
+
+      '
+  metadata:
+    author: Qianyi Li
+    source: IdeaHub
+    source_url: https://hypogenic.ai/ideahub/idea/NdXvHYxOFU400YENr4eI
+    idea_id: the_idea_attention_is_all_you__20260308_085133_958cf6ba
+    created_at: '2026-03-08T08:51:33.923325'
+    status: submitted
+    github_repo_name: attention-in-ai-d12f-claude
+    github_repo_url: https://github.com/Hypogenic-AI/attention-in-ai-d12f-claude
